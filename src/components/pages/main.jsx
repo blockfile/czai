@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import bg from "../assets/images/aura-bg.gif";
+import bgVideo from "../assets/images/aura-bg.mp4"; // Import your MP4 file
 import COSMO from "../assets/images/talk.2.gif";
 import COSMOTALK from "../assets/images/talk.mouthopenclose.gif";
 
@@ -34,7 +34,6 @@ function Main() {
     const scrambleInterval = setInterval(() => {
       setTerminalOutput(
         originalOutput.map((line) =>
-          // We'll skip images and videos in the scramble
           line.text && line.type !== "image" && line.type !== "video"
             ? { ...line, text: scrambleString(line.text) }
             : line
@@ -268,7 +267,6 @@ function Main() {
         setIsLoading(true);
         const prompt = inputValue.replace("/video", "").trim();
         try {
-          // POST to /api/generateVideo
           const response = await fetch(
             "http://localhost:3001/api/generateVideo",
             {
@@ -280,7 +278,6 @@ function Main() {
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
           const data = await response.json();
-          // data.videoDataUrl is "data:video/mp4;base64,<large string>"
           setTerminalOutput((prev) => [
             ...prev,
             { type: "response", text: `Response: Video Generated (${prompt})` },
@@ -321,7 +318,7 @@ function Main() {
           setTerminalOutput((prev) => [
             ...prev,
             { type: "response", text: `Response: GIF Generated (${prompt})` },
-            { type: "image", text: data.gifUrl }, // base64 data URL for the GIF
+            { type: "image", text: data.gifUrl },
           ]);
         } catch (error) {
           console.error("Error during GIF generation:", error.message);
@@ -455,6 +452,7 @@ function Main() {
         body: JSON.stringify({ text, voice: "am_michael" }),
       });
       if (response.ok) {
+        setIsTalking(true);
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
@@ -493,10 +491,18 @@ function Main() {
   };
 
   return (
-    <div
-      className="h-screen w-screen bg-cover bg-center bg-no-repeat relative text-xl"
-      style={{ backgroundImage: `url(${bg})` }}
-    >
+    <div className="h-screen w-screen relative text-xl">
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src={bgVideo} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
@@ -510,12 +516,12 @@ function Main() {
       </div>
 
       {/* Terminal Container */}
-      <div className="relative z-10 flex items-center justify-center h-full  ">
+      <div className="relative z-10 flex items-center justify-center h-full">
         <div
           className={`terminal-container font-mono3 ${glitch ? "glitch" : ""}`}
           style={{
             position: "absolute",
-            bottom: "6%", // instead of top: "10%"
+            bottom: "6%",
             left: "10%",
             width: "80%",
             height: "60%",
@@ -548,7 +554,6 @@ function Main() {
               scrollbarColor: "#4CAF50 #000",
             }}
           >
-            {/* If still booting, show boot progress bar */}
             {booting && (
               <p style={{ color: "white" }}>
                 BOOTING SYSTEM... [
@@ -561,9 +566,7 @@ function Main() {
                 ] {progress}%
               </p>
             )}
-            {/* Map over terminalOutput lines */}
             {terminalOutput.map((line, index) => {
-              // if it's an 'image', show as <img>
               if (line.type === "image") {
                 return (
                   <img
@@ -575,9 +578,7 @@ function Main() {
                     onClick={() => setEnlargedImage(line.text)}
                   />
                 );
-              }
-              // if it's a 'video', embed as <video controls src="data:video/mp4;base64,...">
-              else if (line.type === "video") {
+              } else if (line.type === "video") {
                 return (
                   <video
                     key={index}
@@ -587,9 +588,7 @@ function Main() {
                     style={{ maxWidth: "350px" }}
                   />
                 );
-              }
-              // otherwise it's text of some kind
-              else {
+              } else {
                 return (
                   <div
                     key={index}
