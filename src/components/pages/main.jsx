@@ -119,7 +119,7 @@ function Main() {
       "🔹 I am ready to execute commands.",
       "🔹 Type 'HELP' for a list of available commands.",
       "📡 System uplink stable. Awaiting input...",
-      "/video <prompt> - Generates a short video using luma/ray on Replicate.",
+      "/video <prompt> - Generates a short video using CZ-AI.",
       "/gif <prompt> - Generates a GIF based on your prompt.",
       "/generate <prompt> - Generates an image based on your prompt.",
       "/ask <question> - Generates a text/audio response to your question.",
@@ -235,7 +235,7 @@ function Main() {
       if (lowerInput === "help" || lowerInput === "/help") {
         const helpMessages = [
           "Available commands:",
-          "  /video <prompt> - Generates a short video using luma/ray.",
+          "  /video <prompt> - Generates a short video using CZ-AI.",
           "       Output: The MP4 video is displayed in the terminal.",
           "  /gif <prompt> - Generates a GIF based on your prompt.",
           "       Output: A GIF is displayed in the terminal.",
@@ -501,25 +501,25 @@ function Main() {
       <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
       {/* COSMO GIF: change src if isTalking */}
-      <div className="absolute top-0 left-0 right-0 bottom-24 flex justify-center items-center z-10 mt-6">
+      <div className="absolute -top-[700px] left-0 right-0 bottom-24 flex justify-center items-center z-10 mt-6">
         <img
           src={isTalking ? COSMOTALK : COSMO}
           alt="COSMO"
-          className="lg:h-[1000px] lg:w-[1000px] md:h-[800px] md:w-[800px] h-[600px] w-[600px]"
+          className="lg:h-[500px] lg:w-[1000px] md:h-[800px] md:w-[800px] h-[600px] w-[600px]"
         />
       </div>
 
       {/* Terminal Container */}
-      <div className="relative z-10 flex items-center justify-center h-full pt-48">
+      <div className="relative z-10 flex items-center justify-center h-full  ">
         <div
           className={`terminal-container font-mono3 ${glitch ? "glitch" : ""}`}
           style={{
             position: "absolute",
-            top: "10%",
+            bottom: "6%", // instead of top: "10%"
             left: "10%",
             width: "80%",
-            height: "70%",
-            backgroundColor: "rgba(158, 163, 12, 0.7)",
+            height: "60%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
             color: "white",
             fontFamily: "monospace",
             fontSize: "1.2rem",
@@ -594,9 +594,7 @@ function Main() {
                   <div
                     key={index}
                     className={`flex justify-start silkscreen-regular text-justify ${
-                      line.type === "response"
-                        ? "text-yellow-300"
-                        : "text-amber-500"
+                      line.type === "response" ? "text-yellow-300" : "white"
                     }`}
                   >
                     <div>{line.text}</div>
